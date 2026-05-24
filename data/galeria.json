@@ -1,0 +1,27 @@
+[
+  {
+    "titulo": "Treino infantil",
+    "categoria": "Infantil",
+    "imagem": "assets/galeria/treino-infantil-01.jpg"
+  },
+  {
+    "titulo": "Treino adulto",
+    "categoria": "Adulto",
+    "imagem": "assets/galeria/treino-adulto-01.jpg"
+  },
+  {
+    "titulo": "Graduação",
+    "categoria": "Eventos",
+    "imagem": "assets/galeria/graduacao-01.jpg"
+  },
+  {
+    "titulo": "Competição",
+    "categoria": "Competição",
+    "imagem": "assets/galeria/competicao-01.jpg"
+  },
+  {
+    "titulo": "Equipe 4BJJ",
+    "categoria": "Equipe",
+    "imagem": "assets/galeria/equipe-01.jpg"
+  }
+]

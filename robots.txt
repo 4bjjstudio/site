@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://4bjj.com.br/sitemap.xml

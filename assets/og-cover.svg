@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="4BJJ - Disciplina no tatame, evolução para a vida">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0a0a"/>
+      <stop offset="1" stop-color="#1a1a1a"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d72638"/>
+      <stop offset="1" stop-color="#9d1a26"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- brushstroke -->
+  <path d="M -50 470 Q 600 380 1260 520" stroke="url(#red)" stroke-width="48"
+        stroke-linecap="round" fill="none" opacity="0.85"/>
+  <!-- circle motif -->
+  <circle cx="980" cy="200" r="160" fill="none" stroke="#d72638" stroke-width="6"
+          stroke-dasharray="900 40 60 20" opacity="0.7"/>
+  <text x="80" y="240" font-family="'Oswald', Impact, sans-serif"
+        font-size="120" font-weight="800" fill="#f5f5f5" letter-spacing="2">4BJJ</text>
+  <text x="80" y="320" font-family="'Oswald', Impact, sans-serif"
+        font-size="48" font-weight="500" fill="#d72638" letter-spacing="3">STUDIO DE ARTES MARCIAIS</text>
+  <text x="80" y="430" font-family="'Inter', Arial, sans-serif"
+        font-size="42" font-weight="400" fill="#e5e5e5">Disciplina no tatame,</text>
+  <text x="80" y="486" font-family="'Inter', Arial, sans-serif"
+        font-size="42" font-weight="700" fill="#ffffff">evolução para a vida.</text>
+</svg>
