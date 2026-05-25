@@ -21,12 +21,12 @@
   <meta property="og:url" content="https://4bjj.com.br/" />
   <meta property="og:title" content="4BJJ — Disciplina no tatame, evolução para a vida." />
   <meta property="og:description" content="Jiu-Jitsu com técnica, disciplina e respeito. Aulas para crianças, jovens e adultos. Agende sua aula experimental." />
-  <meta property="og:image" content="https://4bjj.com.br/assets/og-cover.svg" />
+  <meta property="og:image" content="https://4bjj.com.br/assets/og-cover.png" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="4BJJ — Disciplina no tatame, evolução para a vida." />
   <meta name="twitter:description" content="Studio de Artes Marciais focado em Jiu-Jitsu. Técnica, disciplina e respeito para todas as idades." />
-  <meta name="twitter:image" content="https://4bjj.com.br/assets/og-cover.svg" />
+  <meta name="twitter:image" content="https://4bjj.com.br/assets/og-cover.png" />
 
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="assets/favicon.svg" />
@@ -34,7 +34,10 @@
   <!-- Fonts (opcionais: o site funciona sem internet com fallback do sistema) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" />
+  <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" /></noscript>
 
   <link rel="stylesheet" href="styles.css" />
 
@@ -47,7 +50,7 @@
     "url": "https://4bjj.com.br/",
     "description": "Studio de Artes Marciais dedicado ao ensino do Jiu-Jitsu com técnica, disciplina e respeito.",
     "sport": "Brazilian Jiu-Jitsu",
-    "image": "https://4bjj.com.br/assets/og-cover.svg",
+    "image": "https://4bjj.com.br/assets/og-cover.png",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Av. Gen. Olímpio Mourão Filho, 301",
@@ -58,6 +61,20 @@
     },
     "telephone": "+5531983639858",
     "email": "4bjjstudio@gmail.com",
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Wednesday", "Friday"],
+        "opens": "16:00",
+        "closes": "17:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Wednesday", "Friday"],
+        "opens": "21:00",
+        "closes": "22:00"
+      }
+    ],
     "sameAs": [
       "https://instagram.com/4bjjstudio"
     ]
@@ -72,8 +89,7 @@
     <div class="container header__inner">
       <a href="#inicio" class="brand" aria-label="4BJJ - Início">
         <!-- IMG real (substitua assets/logo-4bjj.jpeg pelo seu PNG/JPEG/SVG) -->
-        <img src="assets/logo-4bjj.jpeg"
-             onerror="this.onerror=null;this.src='assets/logo-4bjj.svg';"
+        <img src="assets/logo-4bjj.jpeg" data-fallback="assets/logo-4bjj.svg"
              alt="Logo 4BJJ" class="brand__logo" width="48" height="48" />
         <span class="brand__text">
           <span class="brand__name">4BJJ</span>
@@ -81,7 +97,7 @@
         </span>
       </a>
 
-      <button class="nav-toggle" id="nav-toggle"
+      <button class="nav-toggle" id="nav-toggle" type="button"
               aria-label="Abrir menu" aria-expanded="false" aria-controls="primary-nav">
         <span></span><span></span><span></span>
       </button>
@@ -277,10 +293,13 @@
     <section class="section" id="professor" aria-labelledby="professor-title">
       <div class="container teacher">
         <div class="teacher__photo">
-          <img src="assets/paulo-cesar-brasileiro.jpeg"
-               onerror="this.onerror=null;this.classList.add('teacher__photo--placeholder');this.removeAttribute('src');this.setAttribute('aria-hidden','true');"
-               alt="Foto de Paulo César Limeres Brasileiro, Mestre Professor do 4BJJ"
-               width="480" height="600" loading="lazy" />
+          <picture>
+            <source srcset="assets/paulo-cesar-brasileiro.webp" type="image/webp" />
+            <img src="assets/paulo-cesar-brasileiro.jpeg"
+                 data-photo-fallback
+                 alt="Foto de Paulo César Limeres Brasileiro, Mestre Professor do 4BJJ"
+                 width="800" height="1066" loading="lazy" decoding="async" />
+          </picture>
           <span class="teacher__photo-fallback" aria-hidden="true">PCB</span>
           <div class="teacher__ring" aria-hidden="true"></div>
         </div>
@@ -312,19 +331,19 @@
         </header>
 
         <!-- Filtros gerados dinamicamente pelo script -->
-        <div class="gallery__filters" id="gallery-filters" role="tablist" aria-label="Filtrar galeria por categoria"></div>
+        <div class="gallery__filters" id="gallery-filters" role="group" aria-label="Filtrar galeria por categoria"></div>
 
         <!-- Cards renderizados pelo script via fetch(data/galeria.json) -->
-        <div class="gallery" id="gallery" aria-live="polite"></div>
+        <div class="gallery" id="gallery"></div>
 
         <!-- Fallback exibido se o JSON não carregar -->
-        <div class="gallery__empty" id="gallery-empty" hidden>
+        <div class="gallery__empty" id="gallery-empty" role="status" aria-live="polite" hidden>
           <p>Não foi possível carregar a galeria agora.
             Acompanhe nossos treinos e eventos no Instagram.</p>
         </div>
 
         <div class="gallery__cta">
-          <a href="#" id="gallery-insta-link" class="btn btn--ghost"
+          <a href="https://instagram.com/4bjjstudio" id="gallery-insta-link" class="btn btn--ghost"
              target="_blank" rel="noopener noreferrer">
             Ver mais no Instagram
           </a>
@@ -381,23 +400,29 @@
           <ul class="contact__list">
             <li class="contact__item">
               <span class="contact__label">WhatsApp</span>
-              <a id="contact-whatsapp" href="#" class="contact__value">—</a>
+              <a id="contact-whatsapp" href="https://wa.me/5531983639858"
+                 target="_blank" rel="noopener noreferrer"
+                 class="contact__value">+55 (31) 98363-9858</a>
             </li>
             <li class="contact__item">
               <span class="contact__label">E-mail</span>
-              <a id="contact-email" href="#" class="contact__value">—</a>
+              <a id="contact-email" href="mailto:4bjjstudio@gmail.com" class="contact__value">4bjjstudio@gmail.com</a>
             </li>
             <li class="contact__item">
               <span class="contact__label">Instagram</span>
-              <a id="contact-instagram" href="#" target="_blank" rel="noopener noreferrer" class="contact__value">—</a>
+              <a id="contact-instagram" href="https://instagram.com/4bjjstudio"
+                 target="_blank" rel="noopener noreferrer" class="contact__value">instagram.com/4bjjstudio</a>
             </li>
             <li class="contact__item">
               <span class="contact__label">Endereço</span>
-              <span id="contact-address" class="contact__value">—</span>
+              <span id="contact-address" class="contact__value">Av. Gen. Olímpio Mourão Filho, 301 — Planalto, Belo Horizonte/MG, 31720-200</span>
             </li>
             <li class="contact__item">
               <span class="contact__label">Horários</span>
-              <ul id="contact-hours" class="contact__hours"></ul>
+              <ul id="contact-hours" class="contact__hours">
+                <li><strong>Segunda · Quarta · Sexta</strong><span>16h00 – 17h00</span></li>
+                <li><strong>Segunda · Quarta · Sexta</strong><span>21h00 – 22h00</span></li>
+              </ul>
             </li>
           </ul>
 
@@ -407,7 +432,9 @@
         </div>
 
         <div class="contact__cta">
-          <a id="contact-whatsapp-cta" href="#" class="btn btn--primary btn--large">
+          <a id="contact-whatsapp-cta" href="https://wa.me/5531983639858"
+             target="_blank" rel="noopener noreferrer"
+             class="btn btn--primary btn--large">
             Falar pelo WhatsApp
           </a>
         </div>
@@ -426,7 +453,8 @@
   </footer>
 
   <!-- Botão flutuante WhatsApp -->
-  <a href="#" id="whatsapp-float" class="whatsapp-float"
+  <a href="https://wa.me/5531983639858" id="whatsapp-float" class="whatsapp-float"
+     target="_blank" rel="noopener noreferrer"
      aria-label="Falar pelo WhatsApp" data-action="cta-float">
     <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
       <path fill="currentColor" d="M16.04 3C9.4 3 4 8.4 4 15.04c0 2.36.69 4.66 2 6.63L4 29l7.5-1.97a12.04 12.04 0 0 0 4.54.89h.01C22.69 27.92 28 22.52 28 15.88 28 12.66 26.76 9.65 24.5 7.39A11.97 11.97 0 0 0 16.04 3Zm.01 21.92h-.01c-1.59 0-3.15-.42-4.5-1.22l-.32-.19-3.94 1.03 1.05-3.83-.21-.33A9.92 9.92 0 1 1 25.93 15.88c0 5.48-4.46 9.94-9.88 9.94Zm5.43-7.43c-.3-.15-1.76-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.34.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.78-1.66-2.08-.17-.3-.02-.46.13-.61.13-.13.3-.34.45-.51.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51-.17-.01-.37-.01-.57-.01s-.52.07-.79.37c-.27.3-1.04 1.02-1.04 2.49 0 1.47 1.07 2.89 1.22 3.09.15.2 2.11 3.22 5.12 4.51.71.31 1.27.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35Z"/>

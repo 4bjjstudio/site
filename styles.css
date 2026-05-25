@@ -78,6 +78,11 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  /* Garante que nenhum reveal fique invisível para usuários com motion reduzido */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 /* ---------- Utilitários ---------- */
@@ -134,11 +139,16 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700;
 .site-header {
   position: fixed; inset: 0 0 auto 0; z-index: 100;
   height: var(--header-h);
-  background: rgba(10, 10, 10, 0.78);
-  backdrop-filter: saturate(180%) blur(14px);
-  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  background: rgba(10, 10, 10, 0.92);  /* fallback opaco se backdrop-filter não houver */
   border-bottom: 1px solid transparent;
   transition: border-color .3s var(--ease), background .3s var(--ease);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header {
+    background: rgba(10, 10, 10, 0.78);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+  }
 }
 .site-header.is-scrolled {
   background: rgba(10, 10, 10, 0.92);
@@ -423,10 +433,9 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700;
   transition: transform .6s var(--ease);
 }
 .teacher__photo:hover img { transform: scale(1.04); }
-.teacher__photo--placeholder + .teacher__photo-fallback,
-.teacher__photo img:not([src]) ~ .teacher__photo-fallback {
-  display: grid;
-}
+.teacher__photo.is-broken .teacher__photo-fallback { display: grid; }
+.teacher__photo.is-broken img,
+.teacher__photo.is-broken picture { display: none; }
 .teacher__photo-fallback {
   display: none;
   position: absolute; inset: 0;
@@ -670,6 +679,7 @@ a.contact__value:hover { color: var(--red-strong); }
   .primary-nav {
     position: fixed; top: var(--header-h); right: 0; left: 0; bottom: 0;
     background: rgba(8, 8, 8, 0.98);
+    -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     flex-direction: column;
     align-items: stretch; justify-content: flex-start;

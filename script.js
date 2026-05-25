@@ -44,6 +44,7 @@ const SITE_CONFIG = {
    ============================================================ */
 document.documentElement.classList.remove("no-js");
 document.addEventListener("DOMContentLoaded", () => {
+  setupImageFallbacks();
   applyContactInfo();
   setupHeader();
   setupNav();
@@ -53,12 +54,34 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ============================================================
-   Aplica WhatsApp / Instagram / endereço / horários / mapa
+   Fallbacks de imagem (substitui onerror inline → CSP-friendly)
+   ============================================================ */
+function setupImageFallbacks() {
+  // Logo: img com data-fallback → troca src se falhar
+  document.querySelectorAll("img[data-fallback]").forEach((img) => {
+    img.addEventListener("error", function onErr() {
+      img.removeEventListener("error", onErr);
+      img.src = img.dataset.fallback;
+    });
+  });
+
+  // Foto do professor: marca o container como is-broken se a img falhar
+  document.querySelectorAll("img[data-photo-fallback]").forEach((img) => {
+    img.addEventListener("error", () => {
+      const container = img.closest(".teacher__photo");
+      if (container) container.classList.add("is-broken");
+    }, { once: true });
+  });
+}
+
+/* ============================================================
+   Sincroniza dados de contato a partir do SITE_CONFIG.
+   Os hrefs já vêm preenchidos no HTML (degrade gracioso sem JS);
+   esta função apenas atualiza se o operador trocar valor no script.
    ============================================================ */
 function applyContactInfo() {
   const waHref = buildWhatsappUrl();
-
-  document.querySelectorAll('[id="contact-whatsapp"], #contact-whatsapp-cta, #whatsapp-float')
+  document.querySelectorAll("#contact-whatsapp, #contact-whatsapp-cta, #whatsapp-float")
     .forEach((el) => el.setAttribute("href", waHref));
 
   const waText = document.getElementById("contact-whatsapp");
@@ -84,13 +107,17 @@ function applyContactInfo() {
 
   const hours = document.getElementById("contact-hours");
   if (hours) {
-    hours.innerHTML = SITE_CONFIG.HOURS
-      .map(({ label, value }) => `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(value)}</span></li>`)
-      .join("");
+    hours.replaceChildren(...SITE_CONFIG.HOURS.map(({ label, value }) => {
+      const li = document.createElement("li");
+      const strong = document.createElement("strong"); strong.textContent = label;
+      const span = document.createElement("span"); span.textContent = value;
+      li.append(strong, span);
+      return li;
+    }));
   }
 
   const map = document.getElementById("contact-map");
-  if (map) {
+  if (map && map.childElementCount === 0) {
     if (SITE_CONFIG.MAP_EMBED_SRC) {
       const iframe = document.createElement("iframe");
       iframe.src = SITE_CONFIG.MAP_EMBED_SRC;
@@ -101,8 +128,9 @@ function applyContactInfo() {
       map.appendChild(iframe);
     } else {
       map.classList.add("contact__map--placeholder");
-      map.innerHTML =
-        "<div><p>Configure <code>SITE_CONFIG.MAP_EMBED_SRC</code> em <code>script.js</code> para exibir o mapa do Google.</p></div>";
+      const fb = document.createElement("p");
+      fb.textContent = "Mapa indisponível.";
+      map.appendChild(fb);
     }
   }
 }
@@ -125,7 +153,7 @@ function formatPhone(raw) {
 }
 
 /* ============================================================
-   Header: sombra/borda ao rolar + scrollspy
+   Header: sombra/borda ao rolar + scrollspy estável
    ============================================================ */
 function setupHeader() {
   const header = document.getElementById("site-header");
@@ -137,61 +165,96 @@ function setupHeader() {
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
-  // Scroll spy: destaca o link cuja seção está visível
-  const links = document.querySelectorAll('.primary-nav a[href^="#"]');
-  const sections = Array.from(links)
-    .map((a) => document.querySelector(a.getAttribute("href")))
-    .filter(Boolean);
+  // Scroll spy: rastreia ratios e destaca a seção com maior visibilidade
+  const links = Array.from(document.querySelectorAll('.primary-nav a[href^="#"]'));
+  const sectionsById = new Map();
+  links.forEach((a) => {
+    const sec = document.querySelector(a.getAttribute("href"));
+    if (sec) sectionsById.set(sec.id, { section: sec, link: a, ratio: 0 });
+  });
+  if (!("IntersectionObserver" in window) || sectionsById.size === 0) return;
 
-  if (!("IntersectionObserver" in window) || sections.length === 0) return;
+  const setActive = (id) => {
+    links.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
+  };
 
   const io = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      const id = entry.target.id;
-      links.forEach((a) => a.classList.toggle(
-        "is-active", a.getAttribute("href") === `#${id}`
-      ));
+      const rec = sectionsById.get(entry.target.id);
+      if (rec) rec.ratio = entry.isIntersecting ? entry.intersectionRatio : 0;
     });
-  }, { rootMargin: "-50% 0px -45% 0px", threshold: 0 });
+    let best = { id: null, ratio: 0 };
+    for (const [id, { ratio }] of sectionsById) {
+      if (ratio > best.ratio) best = { id, ratio };
+    }
+    if (best.id) setActive(best.id);
+  }, { rootMargin: "-40% 0px -45% 0px", threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] });
 
-  sections.forEach((s) => io.observe(s));
+  for (const { section } of sectionsById.values()) io.observe(section);
 }
 
 /* ============================================================
-   Menu mobile
+   Menu mobile (com focus trap + inert no main + resize-safe)
    ============================================================ */
 function setupNav() {
   const toggle = document.getElementById("nav-toggle");
   const nav = document.getElementById("primary-nav");
+  const main = document.getElementById("main");
   if (!toggle || !nav) return;
+
+  const FOCUSABLE = 'a[href], button:not([disabled])';
+  let lastFocus = null;
+
+  const isMobile = () => window.innerWidth <= 820;
 
   const close = () => {
     toggle.setAttribute("aria-expanded", "false");
     toggle.setAttribute("aria-label", "Abrir menu");
     nav.classList.remove("is-open");
     document.body.style.overflow = "";
+    if (main) main.removeAttribute("inert");
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
   };
   const open = () => {
+    lastFocus = document.activeElement;
     toggle.setAttribute("aria-expanded", "true");
     toggle.setAttribute("aria-label", "Fechar menu");
     nav.classList.add("is-open");
     document.body.style.overflow = "hidden";
+    if (main) main.setAttribute("inert", "");
+    const first = nav.querySelector(FOCUSABLE);
+    first && first.focus();
   };
 
   toggle.addEventListener("click", () => {
-    const expanded = toggle.getAttribute("aria-expanded") === "true";
-    expanded ? close() : open();
+    toggle.getAttribute("aria-expanded") === "true" ? close() : open();
   });
 
-  nav.querySelectorAll('a[href^="#"]').forEach((a) =>
-    a.addEventListener("click", () => {
-      if (window.innerWidth <= 820) close();
-    })
-  );
+  // Fecha ao clicar em link âncora (uma vez só, via delegation)
+  nav.addEventListener("click", (e) => {
+    if (e.target.closest('a[href^="#"]') && isMobile()) close();
+  });
 
+  // ESC fecha
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && nav.classList.contains("is-open")) close();
+    if (!nav.classList.contains("is-open")) return;
+    if (e.key === "Escape") { close(); return; }
+
+    // Focus trap dentro do menu
+    if (e.key === "Tab") {
+      const focusables = Array.from(nav.querySelectorAll(FOCUSABLE));
+      if (focusables.length === 0) return;
+      const firstEl = focusables[0];
+      const lastEl = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && active === firstEl) { e.preventDefault(); lastEl.focus(); }
+      else if (!e.shiftKey && active === lastEl) { e.preventDefault(); firstEl.focus(); }
+    }
+  });
+
+  // Resize seguro: se passar pra desktop com menu aberto, fecha estado
+  window.addEventListener("resize", () => {
+    if (!isMobile() && nav.classList.contains("is-open")) close();
   });
 }
 
@@ -204,18 +267,20 @@ function setupYear() {
 }
 
 /* ============================================================
-   Reveal on scroll
+   Reveal on scroll  (não aplica se o usuário pediu motion reduzido)
    ============================================================ */
 function setupReveal() {
+  const reduced = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) return;  // mantém visível como veio do HTML
+
   const targets = document.querySelectorAll(
     ".section__head, .value-card, .card, .benefit, .testimonial, .teacher__photo, .teacher__bio, .hero__inner, .contact"
   );
-  targets.forEach((el) => el.classList.add("reveal"));
 
-  if (!("IntersectionObserver" in window)) {
-    targets.forEach((el) => el.classList.add("is-visible"));
-    return;
-  }
+  if (!("IntersectionObserver" in window)) return;  // sem IO: já visível, sem fade
+
+  targets.forEach((el) => el.classList.add("reveal"));
 
   const io = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
@@ -251,13 +316,13 @@ async function loadGallery() {
     return;
   }
 
-  // Filtros
+  // Filtros (só se houver pelo menos 2 categorias)
   const categories = Array.from(new Set(items.map((i) => i.categoria).filter(Boolean)));
-  if (filters && categories.length > 0) {
+  if (filters && categories.length >= 2) {
     filters.innerHTML =
-      `<button class="gallery__filter is-active" data-filter="*" role="tab" aria-selected="true">Todos</button>` +
+      `<button type="button" class="gallery__filter is-active" data-filter="*" aria-pressed="true">Todos</button>` +
       categories
-        .map((c) => `<button class="gallery__filter" data-filter="${escapeAttr(c)}" role="tab" aria-selected="false">${escapeHtml(c)}</button>`)
+        .map((c) => `<button type="button" class="gallery__filter" data-filter="${escapeAttr(c)}" aria-pressed="false">${escapeHtml(c)}</button>`)
         .join("");
 
     filters.addEventListener("click", (e) => {
@@ -265,7 +330,7 @@ async function loadGallery() {
       if (!btn) return;
       filters.querySelectorAll(".gallery__filter").forEach((b) => {
         b.classList.toggle("is-active", b === btn);
-        b.setAttribute("aria-selected", b === btn ? "true" : "false");
+        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
       });
       const filter = btn.dataset.filter;
       grid.querySelectorAll(".gallery__item").forEach((card) => {
@@ -273,6 +338,8 @@ async function loadGallery() {
         card.style.display = match ? "" : "none";
       });
     });
+  } else if (filters) {
+    filters.hidden = true;
   }
 
   // Cards
