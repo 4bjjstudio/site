@@ -2,6 +2,8 @@
 .DS_Store
 Thumbs.db
 desktop.ini
+*:Zone.Identifier
+*.Zone.Identifier
 
 # Editor
 .vscode/
