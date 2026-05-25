@@ -11,30 +11,32 @@
    ============================================================ */
 const SITE_CONFIG = {
   // WhatsApp completo no padrão internacional (DDI + DDD + número), sem espaços ou sinais.
-  // Exemplo Brasil: "5511999999999"
-  WHATSAPP_NUMBER: "5500000000000",
+  // Celular brasileiro = 13 dígitos (55 + DDD + 9 + 8 dígitos).
+  WHATSAPP_NUMBER: "5531983639858",
 
   // Mensagem pré-preenchida ao abrir o WhatsApp
   WHATSAPP_MESSAGE: "Olá! Vim pelo site do 4BJJ e gostaria de agendar uma aula experimental.",
+
+  // E-mail de contato
+  EMAIL: "4bjjstudio@gmail.com",
 
   // URL do perfil do Instagram
   INSTAGRAM_URL: "https://instagram.com/4bjjstudio",
 
   // Endereço completo do studio
-  ADDRESS: "Rua exemplo, 000 — Cidade/UF",
+  ADDRESS: "Av. Gen. Olímpio Mourão Filho, 301 — Planalto, Belo Horizonte/MG, 31720-200",
 
   // Horários de funcionamento (label livre + valor livre)
   HOURS: [
-    { label: "Segunda a Sexta", value: "06h00 – 22h00" },
-    { label: "Sábado",          value: "08h00 – 12h00" },
-    { label: "Domingo",         value: "Fechado"        },
+    { label: "Segunda · Quarta · Sexta", value: "16h00 – 17h00" },
+    { label: "Segunda · Quarta · Sexta", value: "21h00 – 22h00" },
   ],
 
   // Embed do Google Maps:
   //   1) Abra https://maps.google.com → busque seu endereço
   //   2) "Compartilhar" → "Incorporar um mapa" → copie só a URL do src
   //   3) Cole abaixo. Se ficar vazio, o site mostra um placeholder gentil.
-  MAP_EMBED_SRC: "",
+  MAP_EMBED_SRC: "https://www.google.com/maps?q=Av.+Gen.+Ol%C3%ADmpio+Mour%C3%A3o+Filho,+301,+Planalto,+Belo+Horizonte+-+MG,+31720-200&output=embed",
 };
 
 /* ============================================================
@@ -61,6 +63,12 @@ function applyContactInfo() {
 
   const waText = document.getElementById("contact-whatsapp");
   if (waText) waText.textContent = formatPhone(SITE_CONFIG.WHATSAPP_NUMBER);
+
+  const email = document.getElementById("contact-email");
+  if (email && SITE_CONFIG.EMAIL) {
+    email.href = `mailto:${SITE_CONFIG.EMAIL}`;
+    email.textContent = SITE_CONFIG.EMAIL;
+  }
 
   const ig = document.getElementById("contact-instagram");
   if (ig) {
