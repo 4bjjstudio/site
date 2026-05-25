@@ -191,7 +191,12 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700;
 }
 .primary-nav a:hover, .primary-nav a.is-active { color: #fff; }
 .primary-nav a:hover::after, .primary-nav a.is-active::after { transform: scaleX(1); }
-.nav__cta { padding: 11px 20px; font-size: 13px; }
+.nav__cta {
+  padding: 11px 20px;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
 
 .nav-toggle {
   display: none;
