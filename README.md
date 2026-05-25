@@ -53,9 +53,9 @@ npx --yes serve .
 
 ### A) GitHub Pages (recomendado para começar — gratuito)
 
-1. No repositório (`JanusJJR/-4bjj-site`), vá em **Settings → Pages**.
+1. No repositório (`4bjjstudio/site`), vá em **Settings → Pages**.
 2. Em **Source**, selecione `Deploy from a branch` → branch `main`, pasta `/ (root)`.
-3. Salve. O GitHub vai publicar em `https://janusjjr.github.io/-4bjj-site/`.
+3. Salve. O GitHub vai publicar em `https://4bjjstudio.github.io/site/`.
 4. O arquivo [`CNAME`](CNAME) já está configurado com `4bjj.com.br`. Em **Settings → Pages → Custom domain** confirme o domínio. Marque **Enforce HTTPS** assim que o certificado for emitido (alguns minutos após o DNS propagar).
 
 **DNS do `4bjj.com.br`** (no painel do registrador — Registro.br, Cloudflare, etc.):
@@ -66,14 +66,14 @@ npx --yes serve .
 | A     | `@`     | `185.199.109.153`           |
 | A     | `@`     | `185.199.110.153`           |
 | A     | `@`     | `185.199.111.153`           |
-| CNAME | `www`   | `janusjjr.github.io.`       |
+| CNAME | `www`   | `4bjjstudio.github.io.`     |
 
 Depois de propagar (15min–24h), `https://4bjj.com.br` já abre o site.
 
 ### B) Cloudflare Pages (recomendado para produção)
 
 1. Acesse https://dash.cloudflare.com → **Workers & Pages → Create → Pages → Connect to Git**.
-2. Selecione o repositório `JanusJJR/-4bjj-site`.
+2. Selecione o repositório `4bjjstudio/site`.
 3. Configuração de build:
    - **Build command:** *(deixe vazio)*
    - **Build output directory:** `/`
