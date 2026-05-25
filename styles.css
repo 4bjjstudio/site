@@ -219,9 +219,27 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700;
   display: flex; align-items: center;
   padding: calc(var(--header-h) + 60px) 0 80px;
   overflow: hidden;
-  background: radial-gradient(ellipse at 20% 0%, #1c1c1c 0%, #0a0a0a 55%);
+  background:
+    radial-gradient(ellipse at 20% 0%, #1c1c1c 0%, #0a0a0a 55%),
+    #0a0a0a;
 }
-.hero__bg { position: absolute; inset: 0; pointer-events: none; }
+.hero__bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+
+/* Watermark "4BJJ" gigante no canto inferior direito */
+.hero__mark {
+  position: absolute;
+  right: -2vw; bottom: -8vw;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(220px, 36vw, 520px);
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  color: rgba(255, 255, 255, 0.025);
+  -webkit-text-stroke: 1px rgba(215, 38, 56, 0.15);
+  user-select: none;
+  pointer-events: none;
+}
+
 .hero__brush {
   position: absolute; left: -10%; right: -10%; bottom: -10%;
   height: 70%;
@@ -231,42 +249,78 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700;
   filter: blur(2px);
 }
 .hero__ring {
-  position: absolute; top: 8%; right: -180px;
-  width: 560px; height: 560px;
+  position: absolute; top: 6%; right: -160px;
+  width: 520px; height: 520px;
   border-radius: 50%;
   border: 1px solid rgba(215, 38, 56, 0.35);
   border-top-color: rgba(215, 38, 56, 0.9);
   border-right-color: rgba(215, 38, 56, 0.6);
-  animation: spin 28s linear infinite;
+  animation: spin 32s linear infinite;
 }
 .hero__ring::after {
   content: ""; position: absolute; inset: 28px;
   border-radius: 50%;
   border: 1px dashed rgba(255, 255, 255, 0.08);
 }
+/* Faixa horizontal estilo "graduação BJJ" no canto inferior esquerdo */
+.hero__stripes {
+  position: absolute; left: 0; bottom: 0;
+  width: 220px; height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--red) 0 28px,
+    transparent 28px 36px
+  );
+  opacity: 0.55;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .hero__inner { position: relative; z-index: 2; max-width: 880px; }
 .hero__title {
-  font-size: clamp(40px, 6vw, 76px);
-  margin: 18px 0 22px;
+  font-size: clamp(36px, 5.4vw, 64px);
+  margin: 18px 0 24px;
+  line-height: 1.04;
+  letter-spacing: -0.5px;
+  text-wrap: balance;
+}
+.hero__title-line {
+  display: block;
+}
+.hero__title-line + .hero__title-line {
+  margin-top: 4px;
 }
 .hero__sub {
-  font-size: clamp(16px, 1.4vw, 19px);
+  font-size: clamp(16px, 1.35vw, 19px);
   color: var(--text-dim);
-  max-width: 640px; margin: 0 0 32px;
+  max-width: 640px; margin: 0 0 36px;
+  line-height: 1.55;
+}
+.hero__sub strong {
+  color: #fff; font-weight: 600;
 }
 .hero__actions {
-  display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 40px;
+  display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 44px;
 }
-.hero__pills {
-  display: flex; flex-wrap: wrap; gap: 8px;
+.hero__highlights {
+  display: flex; flex-wrap: wrap; gap: 10px 24px;
+  align-items: center;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--line);
+  max-width: 720px;
 }
-.hero__pills li {
-  font-family: var(--font-display); font-size: 12px; font-weight: 500;
-  text-transform: uppercase; letter-spacing: 2.5px;
+.hero__highlights li {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body);
+  font-size: 13.5px;
   color: var(--text-dim);
-  padding: 8px 14px; border: 1px solid var(--line-strong); border-radius: 999px;
+  letter-spacing: 0.2px;
+}
+.hero__highlights-icon {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 3px rgba(215, 38, 56, 0.18);
+  font-size: 0;
 }
 
 .hero__scroll {
